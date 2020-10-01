@@ -3,38 +3,44 @@ import numpy as np
 from zelda_experiment import ZeldaExperiment
 from utils.gvgai import deploy_human, features_to_array
 
-def itae_experiment(path, max_iterations, goal, exp_id, projection=None):
+def itae_experiment(path, max_iterations, goal, exp_id, projection=None, verbose=False):
     # TODO: test this.
     behaviors = []
     times = []
     data = []
 
     for it in range(max_iterations):
-        print("="*30 + f" Iteration {it} " + "="*30)
-        print("Fitting with:")
-        print(f"Behaviors: {behaviors}")
-        print(f"times: {times}")
+        if verbose:
+            print("="*30 + f" Iteration {it} " + "="*30)
+            print("Fitting with:")
+            print(f"Behaviors: {behaviors}")
+            print(f"times: {times}")
         ze = ZeldaExperiment(
             path,
             goal,
             behaviors=behaviors,
             times=times, # takes time, not log(time)
-            projection=["leniency", "reachability"]
+            projection=["leniency", "reachability"],
+            verbose=verbose
         )
 
         ze.plot_projected(f"./data/plots/{exp_id}_iteration_{it}.jpg")
         ze.save_3D_plot(f"./data/plots/plot_3D_{exp_id}_iteration_{it}")
         ze.save_3D_plot(f"./data/plots/plot_3D_no_sigma_{exp_id}_iteration_{it}", plot_sigma=False)
 
-        print("Deploying level: ")
         level = ze.next_level()
-        print(level)
+        if verbose:
+            print("Deploying level: ")
+            print(level)
         p, beh = deploy_human(level, exp_id + f"_itae_{it}") # returns log(steps)
 
         # convert beh to a list
         beh = features_to_array(beh)
         time = round(np.exp(p))
-        print(f"Time it took: {time}. Behavior: {beh}")
+
+        if verbose:
+            print(f"Time it took: {time}. Behavior: {beh}")
+
         behaviors.append(beh)
         times.append(time)
 
@@ -45,8 +51,10 @@ def itae_experiment(path, max_iterations, goal, exp_id, projection=None):
             "behavior": beh,
             "time": time
         })
-    
-    print("Saving the data")
+
+    if verbose:    
+        print("Saving the data")
+
     with open(f"./data/experiment_results/{exp_id}_itae.json", "w") as fp:
         json.dump(data, fp)
 

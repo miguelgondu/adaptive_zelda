@@ -13,7 +13,7 @@ from utils.gvgai import deploy_human
 
 from zelda_experiment import ZeldaExperiment
 
-def baseline_experiment(path, max_iterations, goal, exp_id):
+def baseline_experiment(path, max_iterations, goal, exp_id, verbose=False):
     # TODO: change this search to be in 2D space.
     experiment = {
         "path": path,
@@ -29,16 +29,6 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
     )
     prior = ze.prior
 
-    # with open(path) as fp:
-    #     prior = json.load(fp)
-    
-    # prior = {
-    #     tuple(json.loads(k)): v for k, v in prior.items()
-    # }
-
-    # centroids = np.array([
-    #     k for k, v in prior.items() if v["solution"] is not None
-    # ])
     centroids = prior.loc[:, ["leniency", "reachability"]].values
 
     scaler = MinMaxScaler()
@@ -54,12 +44,15 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
     c_current = centroids[index]
     x_current = level_from_text(prior.loc[index, "level"])
 
-    print("Deploying level: ")
-    print(x_current)
+    if verbose:
+        print("Deploying level: ")
+        print(x_current)
     p_current, _ = deploy_human(x_current, exp_id + f"_baseline_0")
     p_current = round(np.exp(p_current)) # since deploy_human models in log
-    print(f"First performance: {p_current}")
     o_current = - np.abs(p_current - goal)
+
+    if verbose:
+        print(f"First performance: {p_current}")
 
     # Saving the 0th iteration:
     experiment["iterations"].append(
@@ -86,8 +79,11 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
         x_new = level_from_text(prior.loc[index, "level"])
         p_new, _ = deploy_human(x_new, exp_id + f"_baseline_{i+1}")
         p_new = round(np.exp(p_new)) # since deploy human models in log
-        print(f"Performance: {p_new}")
         o_new = - np.abs(p_new - goal)
+
+        if verbose:
+            print(f"Performance: {p_new}")
+
         experiment["iterations"].append(
             {
                 "centroid": tuple(new_point.tolist()),
@@ -104,7 +100,8 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
             # compute objective functions:
             if o_new > o_current:
                 # new becomes current
-                print("New center of exploration!")
+                if verbose:
+                    print("New center of exploration!")
                 c_current = new_point
                 p_current = p_new
                 o_current = -np.abs(p_current - goal)
@@ -112,22 +109,24 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
                 experiment["iterations"][-1]["became_new"] = True
         else:
             # We escape, and new becomes current
-            print("New center of exploration!")
-            print("(but because of escaping)")
+            if verbose:
+                print("New center of exploration!")
+                print("(but because of escaping)")
             c_current = new_point
             p_current = p_new
             o_current = -np.abs(p_current - goal)
             x_current = x_new
             experiment["iterations"][-1]["became_new"] = True
     
-    print("Best level: ")
-    print(np.array(x_current))
+    if verbose:
+        print("Best level: ")
+        print(np.array(x_current))
 
-    print("Best performance:")
-    print(p_current)
+        print("Best performance:")
+        print(p_current)
 
-    print("Experiment:")
-    print(experiment)
+        print("Experiment:")
+        print(experiment)
 
     with open(f"./data/experiment_results/{exp_id}_baseline.json", "w") as fp:
         json.dump(experiment, fp)
@@ -135,7 +134,7 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
 if __name__ == "__main__":
     baseline_experiment(
         "./data/generations/custom_posterior.json",
-        2,
-        150,
+        10,
+        200,
         "one_test"
     )

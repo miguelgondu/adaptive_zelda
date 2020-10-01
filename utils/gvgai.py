@@ -40,14 +40,12 @@ def deploy_human(x, level_name, path_to_gvgai=None):
     """
     current_dir = os.getcwd()
     cwd = Path(current_dir)
-    print(cwd)
     path_to_gvgai = cwd / "compiled_gvgai_w_fbf"
 
     path_to_data = cwd / "data"
     path_to_vgdl = path_to_data / f"zelda_vgdl.txt"
     path_to_level = path_to_data / "levels" / f"{level_name}.txt"
     record_path = path_to_data / "playtraces" / f"{level_name}.txt"
-    print(path_to_vgdl)
 
     seed = 17
 
@@ -87,7 +85,6 @@ def deploy_human(x, level_name, path_to_gvgai=None):
 
     # At this point, we're sure results isn't none.
     os.chdir(current_dir)
-    print(f"Total time: {total_time}")
     # performance = compute_performance_human(results)
 
     performance = np.log(total_time)

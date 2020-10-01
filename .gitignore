@@ -1,17 +1,10 @@
 .vscode/
 .DS_Store
-summarize.py
-# visualize.py
 *.jpg
-compiled_gvgai_*/
+# compiled_gvgai_*/
 data_backup_*
-exp_*.json
-# local_testing/
-# local_testing_baseline.ipynb
-# local_visualization.ipynb
-local_*
-local_plot_3d.py
 data/
+clean_data_folder.sh
 
 # Python related stuff
 # Byte-compiled / optimized / DLL files

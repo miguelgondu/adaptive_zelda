@@ -73,21 +73,21 @@ if __name__ == "__main__":
     if np.random.randint(0, 2) == 0:
         experiment_metadata["order"] = "baseline->bayesian"
         
-        print("Running the baseline experiment")
+        print("Running the first experiment")
         # _ = input("Press enter to start with the first 10 levels")
         baseline_experiment(path, max_iterations, goal, exp_id)
 
-        print("Running the Bayesian experiment")
+        print("Running the second experiment")
         # _ = input("Press enter to start with the second 10 levels")
         itae_experiment(path, max_iterations, goal, exp_id)
     else:
         experiment_metadata["order"] = "bayesian->baseline"
         
-        print("Running the Bayesian experiment")
+        print("Running the first experiment")
         # _ = input("Press enter to start with the first 10 levels")
         itae_experiment(path, max_iterations, goal, exp_id)
 
-        print("Running the baseline experiment")
+        print("Running the second experiment")
         # _ = input("Press enter to start with the second 10 levels")
         baseline_experiment(path, max_iterations, goal, exp_id)
 
