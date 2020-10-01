@@ -128,6 +128,8 @@ class ZeldaExperiment:
             acq = self._ucb(kappa=kappa)
         elif function == "ei":
             acq = self._expected_improvement()
+        else:
+            raise ValueError(f"Was expecting {function} to be 'ucb' or 'ei'")
 
         next_behavior = list(self.domain[np.argmax(acq)])
         # self.behaviors.append(next_behavior)

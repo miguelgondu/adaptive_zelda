@@ -29,6 +29,11 @@ def print_to_text(level, path=None):
     
     return text
 
+def features_to_array(feat_dict):
+    keys = list(feat_dict.keys())
+    keys.sort()
+    return [feat_dict[f] for f in keys]
+
 def deploy_human(x, level_name, path_to_gvgai=None):
     """
     Plays level x with a human.
@@ -39,7 +44,7 @@ def deploy_human(x, level_name, path_to_gvgai=None):
     path_to_gvgai = cwd / "compiled_gvgai_w_fbf"
 
     path_to_data = cwd / "data"
-    path_to_vgdl = path_to_data / f"zelda_vgld_desc.txt"
+    path_to_vgdl = path_to_data / f"zelda_vgdl.txt"
     path_to_level = path_to_data / "levels" / f"{level_name}.txt"
     record_path = path_to_data / "playtraces" / f"{level_name}.txt"
     print(path_to_vgdl)

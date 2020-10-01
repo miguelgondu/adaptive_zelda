@@ -7,7 +7,11 @@ import json
 import numpy as np
 from scipy.spatial import cKDTree
 from sklearn.preprocessing import MinMaxScaler
+
+from utils.pcg import level_from_text
 from utils.gvgai import deploy_human
+
+from zelda_experiment import ZeldaExperiment
 
 def baseline_experiment(path, max_iterations, goal, exp_id):
     # TODO: change this search to be in 2D space.
@@ -18,16 +22,24 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
         "iterations": []
     }
 
-    with open(path) as fp:
-        prior = json.load(fp)
-    
-    prior = {
-        tuple(json.loads(k)): v for k, v in prior.items()
-    }
+    ze = ZeldaExperiment(
+        path,
+        goal,
+        projection=["leniency", "reachability"]
+    )
+    prior = ze.prior
 
-    centroids = np.array([
-        k for k, v in prior.items() if v["solution"] is not None
-    ])
+    # with open(path) as fp:
+    #     prior = json.load(fp)
+    
+    # prior = {
+    #     tuple(json.loads(k)): v for k, v in prior.items()
+    # }
+
+    # centroids = np.array([
+    #     k for k, v in prior.items() if v["solution"] is not None
+    # ])
+    centroids = prior.loc[:, ["leniency", "reachability"]].values
 
     scaler = MinMaxScaler()
     scaled_cs = scaler.fit_transform(centroids)
@@ -38,10 +50,12 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
     # Add noise, and then query the point closest
     # and iterate.
     center = [0.5] * len(centroids[0])
-    c_current = centroids[kdtree.query(center)[1]]
-    c_current = tuple(c_current.tolist())
-    x_current = prior[c_current]["solution"]
-    
+    index = kdtree.query(center)[1]
+    c_current = centroids[index]
+    x_current = level_from_text(prior.loc[index, "level"])
+
+    print("Deploying level: ")
+    print(x_current)
     p_current, _ = deploy_human(x_current, exp_id + f"_baseline_0")
     p_current = round(np.exp(p_current)) # since deploy_human models in log
     print(f"First performance: {p_current}")
@@ -50,7 +64,7 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
     # Saving the 0th iteration:
     experiment["iterations"].append(
         {
-            "centroid": c_current,
+            "centroid": tuple(c_current.tolist()),
             "level": x_current,
             "performance": p_current,
             "objective": int(o_current),
@@ -65,10 +79,11 @@ def baseline_experiment(path, max_iterations, goal, exp_id):
         new_point = scaled_c + np.random.normal(scale=0.33, size=scaled_c.size)
 
         # Convert it to the closest one in the grid
-        new_point = centroids[kdtree.query(new_point)[1]]
+        index = kdtree.query(new_point)[1]
+        new_point = centroids[index]
 
         # Deploy it and record
-        x_new = prior[tuple(new_point.tolist())]["solution"]
+        x_new = level_from_text(prior.loc[index, "level"])
         p_new, _ = deploy_human(x_new, exp_id + f"_baseline_{i+1}")
         p_new = round(np.exp(p_new)) # since deploy human models in log
         print(f"Performance: {p_new}")

@@ -242,145 +242,181 @@ def print_to_text(level, path=None):
     
     return text
 
-# def scramble_prompt(level, prompt, scrambles=1):
-#     """
-#     Right now, it's only implemented for scrambling
-#     enemies.
+def create_random_level(width, height, loot, enemies, walls, draw_path=False):
+    level = create_empty_level(width, height)
+    place_edge_walls(level)
+    placeable_positions = get_placeable_positions(level)
 
-#     TODO: what if the prompt is a wall, what if it is the avatar,
-#     the key, the goal?
-#     """
-#     current_prompt_positions = get_positions(prompt)
-#     placeable_positions = get_placeable_positions(level)
+    # Positioning player and goals.
+    position_object(level, AVATAR, placeable_positions=placeable_positions)
 
-#     old_pos = random.choice(current_prompt_positions)
-#     new_pos = random.choice(list(placeable_positions))
+    position_object(level, KEY, placeable_positions=placeable_positions)
+    path_to_key = find_path(level, AVATAR, KEY)
 
-#     level[old_pos] = EMPTY
-#     level[new_pos] = prompt
+    position_object(level, GOAL, placeable_positions=placeable_positions - set(path_to_key.keys()))
+    path_to_goal = find_path(level, KEY, GOAL)
+    nodes_path = set(path_to_key.keys()).union(set(path_to_goal.keys()))
+
+    assert GOAL in level and AVATAR in level and KEY in level
+
+    if draw_path:
+        for node in nodes_path:
+            level[node] += PATH
+
+    placeable_positions = get_placeable_positions(level)
+    # Positioning enemies.
+    for _ in range(enemies):
+        enemy = random.choice([ENEMY1, ENEMY2, ENEMY3])
+        position_object(level, enemy, placeable_positions=placeable_positions)
+
+    # Positioning walls. (The new way)
+    placeable_positions = list(get_placeable_positions_inc_path(level))
+    random.shuffle(placeable_positions)
+    for _ in range(min(len(placeable_positions), walls)):
+        pos = placeable_positions.pop()
+        level[pos] = WALL
+
+    return level
+
+def scramble_prompt(level, prompt, scrambles=1):
+    """
+    Right now, it's only implemented for scrambling
+    enemies.
+
+    TODO: what if the prompt is a wall, what if it is the avatar,
+    the key, the goal?
+    """
+    current_prompt_positions = get_positions(prompt)
+    placeable_positions = get_placeable_positions(level)
+
+    old_pos = random.choice(current_prompt_positions)
+    new_pos = random.choice(list(placeable_positions))
+
+    level[old_pos] = EMPTY
+    level[new_pos] = prompt
 
 # New variations
 
-# def get_path_positions(level):
-#     path_to_key = a_star_path(level, root_text=AVATAR, goal_text=KEY)
-#     path_to_goal = a_star_path(level, root_text=KEY, goal_text=GOAL)
-#     return set(path_to_key).union(set(path_to_goal))
+def get_path_positions(level):
+    path_to_key = a_star_path(level, root_text=AVATAR, goal_text=KEY)
+    path_to_goal = a_star_path(level, root_text=KEY, goal_text=GOAL)
+    return set(path_to_key).union(set(path_to_goal))
 
-# def get_placeable_positions_inc_path(level):
-#     floor_tiles = get_positions(level, ".")
-#     non_placeable_pos = get_path_positions(level)
-#     placeable_pos = set(floor_tiles) - non_placeable_pos
-#     return placeable_pos
+def get_placeable_positions_inc_path(level):
+    floor_tiles = get_positions(level, ".")
+    non_placeable_pos = get_path_positions(level)
+    placeable_pos = set(floor_tiles) - non_placeable_pos
+    return placeable_pos
 
-# def expand(level, axis=0):
-#     height, width = level.shape
-#     if axis == 0:
-#         index = np.random.randint(low=1, high=height-1)
-#     elif axis == 1:
-#         index = np.random.randint(low=1, high=width-1)
-#     if axis == 0:
-#         new_row = np.array([WALL] + [EMPTY]*(width-2) + [WALL])
-#         level = np.vstack((level[:index, :], new_row, level[index:, :]))
-#     elif axis == 1:
-#         new_column = np.array([[WALL] + [EMPTY]*(height-2) + [WALL]])
-#         level = np.hstack((level[:, :index], new_column.T, level[:, index:]))
-#     return level
+def expand(level, axis=0):
+    height, width = level.shape
+    if axis == 0:
+        index = np.random.randint(low=1, high=height-1)
+    elif axis == 1:
+        index = np.random.randint(low=1, high=width-1)
+    if axis == 0:
+        new_row = np.array([WALL] + [EMPTY]*(width-2) + [WALL])
+        level = np.vstack((level[:index, :], new_row, level[index:, :]))
+    elif axis == 1:
+        new_column = np.array([[WALL] + [EMPTY]*(height-2) + [WALL]])
+        level = np.hstack((level[:, :index], new_column.T, level[:, index:]))
+    return level
 
-# def is_solvable(level):
-#     try:
-#         path_to_key = a_star_path(level, root_text=AVATAR, goal_text=KEY)
-#         path_to_goal = a_star_path(level, root_text=KEY, goal_text=GOAL)
-#         return True
-#     except ValueError:
-#         return False
+def is_solvable(level):
+    try:
+        path_to_key = a_star_path(level, root_text=AVATAR, goal_text=KEY)
+        path_to_goal = a_star_path(level, root_text=KEY, goal_text=GOAL)
+        return True
+    except ValueError:
+        return False
 
-# def remove_index(level, index, axis=0):
-#     if axis == 0:
-#         new_level = np.vstack((level[:index, :], level[index+1:, :]))
-#     elif axis == 1:
-#         new_level = np.hstack((level[:, :index], level[:, index+1:]))
-#     else:
-#         raise ValueError(f"Unexpected axis: {axis}. Was expecting 0 or 1.")
-#     return new_level
+def remove_index(level, index, axis=0):
+    if axis == 0:
+        new_level = np.vstack((level[:index, :], level[index+1:, :]))
+    elif axis == 1:
+        new_level = np.hstack((level[:, :index], level[:, index+1:]))
+    else:
+        raise ValueError(f"Unexpected axis: {axis}. Was expecting 0 or 1.")
+    return new_level
 
-# def breaks_connectivity(level, index, axis=0):
-#     """Checks if removing col/row index breaks connectivity"""
-#     new_level = remove_index(level, index, axis=axis)
-#     return not is_solvable(new_level)
+def breaks_connectivity(level, index, axis=0):
+    """Checks if removing col/row index breaks connectivity"""
+    new_level = remove_index(level, index, axis=axis)
+    return not is_solvable(new_level)
 
-# def shrink(level, axis=0):
-#     height, width = level.shape
-#     if axis == 0:
-#         removable_indices = set(range(1, height-1))
-#     elif axis == 1:
-#         removable_indices = set(range(1, width-1))
-#     avatar_pos = get_positions(level, AVATAR)[0]
-#     key_pos = get_positions(level, KEY)[0]
-#     goal_pos = get_positions(level, GOAL)[0]
+def shrink(level, axis=0):
+    height, width = level.shape
+    if axis == 0:
+        removable_indices = set(range(1, height-1))
+    elif axis == 1:
+        removable_indices = set(range(1, width-1))
+    avatar_pos = get_positions(level, AVATAR)[0]
+    key_pos = get_positions(level, KEY)[0]
+    goal_pos = get_positions(level, GOAL)[0]
 
-#     removable_indices -= set([pos[axis] for pos in [avatar_pos, key_pos, goal_pos]])
-#     while len(removable_indices) > 0:
-#         selected_index = random.choice(list(removable_indices))
-#         if not breaks_connectivity(level, selected_index, axis=axis):
-#             return remove_index(level, selected_index, axis=axis)
-#         else:
-#             removable_indices.remove(selected_index)
+    removable_indices -= set([pos[axis] for pos in [avatar_pos, key_pos, goal_pos]])
+    while len(removable_indices) > 0:
+        selected_index = random.choice(list(removable_indices))
+        if not breaks_connectivity(level, selected_index, axis=axis):
+            return remove_index(level, selected_index, axis=axis)
+        else:
+            removable_indices.remove(selected_index)
     
-#     print(f"All indices along axis {axis} seem to be important.")
-#     return level
+    print(f"All indices along axis {axis} seem to be important.")
+    return level
 
-# def add_enemies(level, amount):
-#     """
-#     This function adds an enemy at random in any of the floor tiles
-#     in place.
-#     """
-#     floor_tiles = get_positions(level, EMPTY)
-#     random.shuffle(floor_tiles)
-#     for _ in range(min(len(floor_tiles), amount)):
-#         pos = floor_tiles.pop()
-#         enemy = random.choice([ENEMY1, ENEMY2, ENEMY3])
-#         level[pos] = enemy
+def add_enemies(level, amount):
+    """
+    This function adds an enemy at random in any of the floor tiles
+    in place.
+    """
+    floor_tiles = get_positions(level, EMPTY)
+    random.shuffle(floor_tiles)
+    for _ in range(min(len(floor_tiles), amount)):
+        pos = floor_tiles.pop()
+        enemy = random.choice([ENEMY1, ENEMY2, ENEMY3])
+        level[pos] = enemy
 
-# def remove_enemies(level, amount):
-#     """
-#     This function removes an enemy at random replacing them for
-#     floor tiles in place.
-#     """
-#     enemy_pos = get_positions(level, ENEMY1)
-#     enemy_pos += get_positions(level, ENEMY2)
-#     enemy_pos += get_positions(level, ENEMY3)
+def remove_enemies(level, amount):
+    """
+    This function removes an enemy at random replacing them for
+    floor tiles in place.
+    """
+    enemy_pos = get_positions(level, ENEMY1)
+    enemy_pos += get_positions(level, ENEMY2)
+    enemy_pos += get_positions(level, ENEMY3)
 
-#     random.shuffle(enemy_pos)
-#     for _ in range(min(len(enemy_pos), amount)):
-#         pos = enemy_pos.pop()
-#         level[pos] = EMPTY
+    random.shuffle(enemy_pos)
+    for _ in range(min(len(enemy_pos), amount)):
+        pos = enemy_pos.pop()
+        level[pos] = EMPTY
 
-# def add_walls(level, amount):
-#     """
-#     This function takes a level and adds walls in a
-#     row or in a column if mazelike is True, or at
-#     random if mazelike is False.
+def add_walls(level, amount):
+    """
+    This function takes a level and adds walls in a
+    row or in a column if mazelike is True, or at
+    random if mazelike is False.
 
-#     TODO: implement the mazelike part.
-#     """
-#     placeable_pos = list(get_placeable_positions_inc_path(level))
-#     random.shuffle(placeable_pos)
-#     for _ in range(min(len(placeable_pos), amount)):
-#         pos = placeable_pos.pop()
-#         level[pos] = WALL
-#         assert is_solvable(level), "Level isn't solvable. There's a bug in add_walls"
+    TODO: implement the mazelike part.
+    """
+    placeable_pos = list(get_placeable_positions_inc_path(level))
+    random.shuffle(placeable_pos)
+    for _ in range(min(len(placeable_pos), amount)):
+        pos = placeable_pos.pop()
+        level[pos] = WALL
+        assert is_solvable(level), "Level isn't solvable. There's a bug in add_walls"
 
-# def remove_walls(level, amount):
-#     """
-#     This function removes {amount} walls in the inner part of the level.
-#     """
-#     height, width = level.shape
-#     inner_level = level[1:height-1, 1:width-1]
-#     wall_pos = [(x+1, y+1) for (x,y) in get_positions(inner_level, WALL)]
-#     random.shuffle(wall_pos)
-#     for _ in range(min(len(wall_pos), amount)):
-#         pos = wall_pos.pop()
-#         level[pos] = EMPTY
+def remove_walls(level, amount):
+    """
+    This function removes {amount} walls in the inner part of the level.
+    """
+    height, width = level.shape
+    inner_level = level[1:height-1, 1:width-1]
+    wall_pos = [(x+1, y+1) for (x,y) in get_positions(inner_level, WALL)]
+    random.shuffle(wall_pos)
+    for _ in range(min(len(wall_pos), amount)):
+        pos = wall_pos.pop()
+        level[pos] = EMPTY
 
 def compute_features(x):
     '''

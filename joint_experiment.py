@@ -9,12 +9,12 @@ import numpy as np
 import uuid
 import time
 import json
-from utils.map_elites import deploy_human
+from utils.gvgai import deploy_human
 from simpler_itae_experiment import itae_experiment
 from baseline_experiment import baseline_experiment
 from visualize_experiment import plot_exp_id
 
-def onboarding():
+def onboarding(exp_id):
     """
     Plays three simple levels.
     """
@@ -49,15 +49,15 @@ def onboarding():
         ["w", "w", "w", "w", "w", "w", "w"]
     ]
 
-    for level in [level_1, level_2, level_3]:
+    for i, level in enumerate([level_1, level_2, level_3]):
         # play level.
-        deploy_human(level)
+        deploy_human(level, f"{exp_id}_onboarding_{i}")
 
 if __name__ == "__main__":
     path = "./data/generations/custom_posterior.json"
     max_iterations = 10
     goal = 200
-    comment = str(uuid.uuid4()) + f"_goal_{goal}_iterations_{max_iterations}"
+    exp_id = str(uuid.uuid4()) + f"_goal_{goal}_iterations_{max_iterations}"
     # distance_to_goal = 10
 
     experiment_metadata = {
@@ -69,31 +69,31 @@ if __name__ == "__main__":
 
     print("Onboarding:")
     # _ = input("Press enter to start with the experiment")
-    onboarding()
+    onboarding(exp_id)
     if np.random.randint(0, 2) == 0:
         experiment_metadata["order"] = "baseline->bayesian"
         
         print("Running the baseline experiment")
         # _ = input("Press enter to start with the first 10 levels")
-        baseline_experiment(path, max_iterations, goal, comment)
+        baseline_experiment(path, max_iterations, goal, exp_id)
 
         print("Running the Bayesian experiment")
         # _ = input("Press enter to start with the second 10 levels")
-        itae_experiment(path, max_iterations, goal, comment)
+        itae_experiment(path, max_iterations, goal, exp_id)
     else:
         experiment_metadata["order"] = "bayesian->baseline"
         
         print("Running the Bayesian experiment")
         # _ = input("Press enter to start with the first 10 levels")
-        itae_experiment(path, max_iterations, goal, comment)
+        itae_experiment(path, max_iterations, goal, exp_id)
 
         print("Running the baseline experiment")
         # _ = input("Press enter to start with the second 10 levels")
-        baseline_experiment(path, max_iterations, goal, comment)
+        baseline_experiment(path, max_iterations, goal, exp_id)
 
     print(experiment_metadata)
-    with open(f"./data/experiment_results/{comment}_metadata.json", "w") as fp:
+    with open(f"./data/experiment_results/{exp_id}_metadata.json", "w") as fp:
         json.dump(experiment_metadata, fp)
     
     # Plotting the comparison between baseline and itae.
-    plot_exp_id(comment)
+    plot_exp_id(exp_id)

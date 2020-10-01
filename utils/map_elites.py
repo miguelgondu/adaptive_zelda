@@ -195,64 +195,6 @@ def aggregate_results(experiment_id, x, agent, game, original_seed, results):
 
     return agg_results
 
-def deploy_human(x, level_name, path_to_gvgai=None):
-    """
-    Plays level x with a human.
-    """
-    cwd = Path(".")
-    path_to_gvgai = cwd / "compiled_gvgai_w_fbf"
-
-    path_to_data = cwd / "data"
-    path_to_vgdl = path_to_data / f"/zelda_vgld_desc.txt"
-    path_to_level = path_to_data / "levels" / f"{level_name}.txt"
-    record_path = path_to_data / "playtraces" / f"{level_name}.txt"
-
-    seed = 17
-
-    # Call run-game with the human agent.
-    print_to_text(
-        x,
-        path_to_level
-    )
-
-    current_dir = os.getcwd()
-    os.chdir(path_to_gvgai)
-    total_time = 0
-    while total_time < 2000:
-        results = None
-        java = subprocess.Popen([
-            "java",
-            "tracks.singlePlayer.Play",
-            path_to_vgdl,
-            path_to_level,
-            record_path,
-            str(seed),
-            "true"
-        ], stdout=subprocess.PIPE)
-
-        try:
-            results = java.stdout.readline().decode("utf8")
-            results = json.loads(results)
-        except json.decoder.JSONDecodeError as e:
-            print(f"Couldn't decode the results. Got this exception: {e}.")
-            results = None
-        finally:
-            java.kill()
-        
-        if results is not None:
-            total_time += results["steps"]
-            if results["win"] == 1:
-                break
-
-    # At this point, we're sure results isn't none.
-    os.chdir(current_dir)
-    print(f"Total time: {total_time}")
-    # performance = compute_performance_human(results)
-
-    performance = np.log(total_time)
-    features = compute_features(x)
-    return performance, features
-
 def load_df_from_generation(path):
     """
     This function loads the results of a

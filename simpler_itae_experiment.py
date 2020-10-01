@@ -1,7 +1,7 @@
 import json
 import numpy as np
 from zelda_experiment import ZeldaExperiment
-from utils.map_elites import deploy_human, features_to_array
+from utils.gvgai import deploy_human, features_to_array
 
 def itae_experiment(path, max_iterations, goal, exp_id, projection=None):
     # TODO: test this.
@@ -29,7 +29,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, projection=None):
         print("Deploying level: ")
         level = ze.next_level()
         print(level)
-        p, beh = deploy_human(level, exp_id + "_itae_{it}") # returns log(steps)
+        p, beh = deploy_human(level, exp_id + f"_itae_{it}") # returns log(steps)
 
         # convert beh to a list
         beh = features_to_array(beh)
@@ -47,7 +47,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, projection=None):
         })
     
     print("Saving the data")
-    with open(f"./data/experiment_results/{comment}_itae.json", "w") as fp:
+    with open(f"./data/experiment_results/{exp_id}_itae.json", "w") as fp:
         json.dump(data, fp)
 
 if __name__ == "__main__":
