@@ -3,7 +3,6 @@
 *.jpg
 # compiled_gvgai_*/
 data_backup_*
-data/
 clean_data_folder.sh
 
 # Python related stuff
