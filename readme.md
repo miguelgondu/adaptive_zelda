@@ -35,3 +35,7 @@ You will play 23 levels. Use the arrow keys to move around and the spacebar to u
 ```
 python run_experiment.py
 ```
+
+## After the experiment
+
+Could you please zip the `data` folder and send it to me? Feel free to take a look at `./data/plots` to see some cool plots.
