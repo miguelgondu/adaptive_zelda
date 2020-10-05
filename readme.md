@@ -40,7 +40,7 @@ More details on the mechanics:
 - You **don't** have to kill all enemies in order to complete the level.
 - If you die in a level, you will play it again until a maximum amount of in-game steps has been registered.
 
-Use the arrow keys to move around and the spacebar to use your sword. You can also start the levels by pressin Run
+To start the experiment, run:
 
 ```
 python run_experiment.py
