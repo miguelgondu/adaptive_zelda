@@ -11,6 +11,12 @@ Could I ask you to run this piece of code for an experiment?
 
 ## Setting up the environment
 
+Start by cloning this repository and going into that folder:
+```
+git clone https://github.itu.dk/migd/adaptive_zelda_simple.git
+cd adaptive_zelda_simple
+```
+
 Create a new conda environment of python:
 ```
 conda create -n "zelda" python=3.7
