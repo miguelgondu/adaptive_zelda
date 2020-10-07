@@ -1,0 +1,1 @@
+{"prior_path": "./data/generations/custom_posterior.json", "max_iterations": 10, "goal": 200, "time": 1602076597.261442, "order": "baseline->bayesian"}
