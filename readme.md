@@ -1,13 +1,27 @@
 # Adaptive Zelda Experiment
 
-Hello, everyone.
+In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 23 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 150 in-game steps to solve. If you want to know more about the technique and about the experiment, [click here](). 
 
-Could I ask you to run this piece of code for an experiment?
+Do you want to participate?, follow these instructions:
 
 ## Prerequisites
 
-1. Having Java installed.
-2. A way of creating Python environments (e.g. Anaconda).
+### Having Java installed
+
+Make sure you have [Java installed](https://www.java.com/en/download/help/download_options.html). **I'm quite sure most versions would work**, but as a reference I have this when I print `java --version`:
+
+```
+java 13 2019-09-17
+Java(TM) SE Runtime Environment (build 13+33)
+Java HotSpot(TM) 64-Bit Server VM (build 13+33, mixed mode, sharing)
+```
+
+### Having conda (or a way to create Python environments)
+
+If you have conda, you can create a small environment dedicated to this project. Download and install Anaconda from [this link](https://www.anaconda.com/products/individual).
+
+Otherwise, **you should be good as long as you are running Python >=3.6 and run the `pip install ...` command below**.
+
 
 ## Setting up the environment
 
