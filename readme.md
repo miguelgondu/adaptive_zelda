@@ -8,13 +8,19 @@ Do you want to participate?, follow these instructions:
 
 ### Having Java installed
 
-Make sure you have [Java installed](https://www.java.com/en/download/help/download_options.html). **I'm quite sure most versions would work**, but as a reference I have this when I print `java --version`:
+Make sure you have Java 13 (or older) installed. You can try this by running `java --version` (or `java -version`, depending on your OS).
 
 ```
+> java --version
 java 13 2019-09-17
 Java(TM) SE Runtime Environment (build 13+33)
 Java HotSpot(TM) 64-Bit Server VM (build 13+33, mixed mode, sharing)
 ```
+
+**Anything above 13 should work just fine**. Here are a couple tutorials for installing openJDK 13 in case you don't have it:
+- [on Windows](https://java.tutorials24x7.com/blog/how-to-install-openjdk-13-on-windows)
+- [on Ubuntu](http://techoral.com/blog/java/install-openjdk-13-ubuntu.html)
+- [on Mac](http://techoral.com/blog/java/install-openjdk-13-on-mac.html)
 
 ### Having conda (or a way to create Python environments)
 
