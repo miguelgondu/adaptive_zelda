@@ -45,13 +45,27 @@ conda create -n "zelda" python=3.7
 start it and install some of the prerequisites
 ```
 conda activate zelda
-pip install scikit-learn scipy numpy matplotlib pandas
+pip install -r requirements.txt
 ```
 
 Also, create the folders for saving the data by running
 ```
 chmod +x ./create_data_folders.sh
 ./create_data_folders.sh
+```
+
+After this, your `data` folder should look like this:
+
+```
+├── data
+│   ├── experiment_results
+│   ├── generations
+│   │   ├── custom_posterior.json
+│   │   └── human_posterior.json
+│   ├── levels
+│   ├── playtraces
+│   ├── plots
+│   └── zelda_vgdl.txt
 ```
 
 ## Playing the game
