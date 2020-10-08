@@ -22,6 +22,10 @@ Java HotSpot(TM) 64-Bit Server VM (build 13+33, mixed mode, sharing)
 - [on Ubuntu](https://installvirtual.com/how-to-install-openjdk-13-on-ubuntu-19/)
 - [on Mac](http://techoral.com/blog/java/install-openjdk-13-on-mac.html)
 
+### Having Python 3.6 or higher
+
+You will be running a piece of code that was written in Python 3.6. If you don't have Python, I would recommend installing the [Anaconda Distribution](https://www.anaconda.com/products/individual) and creating a virtual environment for this project.
+
 ## Setting up the environment
 
 Start by cloning this repository and going into the folder
