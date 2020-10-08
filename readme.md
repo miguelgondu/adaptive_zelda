@@ -1,6 +1,6 @@
 # Adaptive Zelda Experiment
 
-In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 23 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 150 in-game steps to solve. If you want to know more about the technique and about the experiment, [read our previous paper](https://arxiv.org/abs/2005.07677). 
+In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 23 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 150 in-game steps to solve. If you want to know more about the technique and about the experiment, [read our previous paper](https://arxiv.org/abs/2005.07677).
 
 Do you want to participate?, follow these instructions:
 
@@ -19,34 +19,28 @@ Java HotSpot(TM) 64-Bit Server VM (build 13+33, mixed mode, sharing)
 
 **Anything above 13 should work just fine**. Here are a couple tutorials for installing openJDK 13 in case you don't have it:
 - [on Windows](https://java.tutorials24x7.com/blog/how-to-install-openjdk-13-on-windows)
-- [on Ubuntu](http://techoral.com/blog/java/install-openjdk-13-ubuntu.html)
+- [on Ubuntu](https://installvirtual.com/how-to-install-openjdk-13-on-ubuntu-19/)
 - [on Mac](http://techoral.com/blog/java/install-openjdk-13-on-mac.html)
-
-### Having conda (or a way to create Python environments)
-
-If you have conda, you can create a small environment dedicated to this project. Download and install Anaconda from [this link](https://www.anaconda.com/products/individual).
-
-Otherwise, **you should be good as long as you are running Python >=3.6 and run the `pip install ...` command below**.
-
 
 ## Setting up the environment
 
-Start by cloning this repository and going into that folder:
+Start by cloning this repository and going into the folder
+
 ```
-git clone https://github.com/miguelgondu/adaptive_zelda.git
-cd adaptive_zelda_simple
+git clone https://github.com/miguelgondu/adaptive_zelda
+cd adaptive_zelda
 ```
 
-Create a new conda environment of python:
-```
-conda create -n "zelda" python=3.7
-```
 
-start it and install some of the prerequisites
-```
-conda activate zelda
-pip install -r requirements.txt
-```
+You will need a running version of Python >=3.6, and the following requirements:
+- scikit-learn
+- scipy
+- pandas
+- numpy
+- matplotlib
+
+You can install these using `pip install -r requirements.txt`.
+
 
 Also, create the folders for saving the data by running
 ```
