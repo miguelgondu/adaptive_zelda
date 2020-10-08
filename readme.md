@@ -1,6 +1,6 @@
 # Adaptive Zelda Experiment
 
-In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 23 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 150 in-game steps to solve. If you want to know more about the technique and about the experiment, [click here](). 
+In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 23 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 150 in-game steps to solve. If you want to know more about the technique and about the experiment, [read our previous paper](https://arxiv.org/abs/2005.07677). 
 
 Do you want to participate?, follow these instructions:
 
