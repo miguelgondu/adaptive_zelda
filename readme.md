@@ -33,7 +33,7 @@ Otherwise, **you should be good as long as you are running Python >=3.6 and run 
 
 Start by cloning this repository and going into that folder:
 ```
-git clone https://github.itu.dk/migd/adaptive_zelda_simple.git
+git clone https://github.com/miguelgondu/adaptive_zelda.git
 cd adaptive_zelda_simple
 ```
 
