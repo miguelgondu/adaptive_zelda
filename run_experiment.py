@@ -97,10 +97,11 @@ if __name__ == "__main__":
         # _ = input("Press enter to start with the second 10 levels")
         baseline_experiment(path, max_iterations, goal, exp_id)
 
-    print()
     with open(f"./data/experiment_results/{exp_id}_metadata.json", "w") as fp:
         json.dump(experiment_metadata, fp)
 
+    print()
+    print("-"*50)
     print("Your results have been stored.")
     print("Check ./data/plots to see some cool plots!")
     print("Thanks for participating!")
