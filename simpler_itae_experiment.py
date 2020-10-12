@@ -3,8 +3,7 @@ import numpy as np
 from zelda_experiment import ZeldaExperiment
 from utils.gvgai import deploy_human, features_to_array
 
-def itae_experiment(path, max_iterations, goal, exp_id, projection=None, verbose=False):
-    # TODO: test this.
+def itae_experiment(path, max_iterations, goal, exp_id, verbose=False):
     behaviors = []
     times = []
     data = []
@@ -32,6 +31,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, projection=None, verbose
         if verbose:
             print("Deploying level: ")
             print(level)
+        print(f"Deploying level {it+1}/{max_iterations}", end="\r", flush=True)
         p, beh = deploy_human(level, exp_id + f"_itae_{it}") # returns log(steps)
 
         # convert beh to a list

@@ -44,9 +44,9 @@ def baseline_experiment(path, max_iterations, goal, exp_id, verbose=False):
     c_current = centroids[index]
     x_current = level_from_text(prior.loc[index, "level"])
 
-    if verbose:
-        print("Deploying level: ")
-        print(x_current)
+    # print("Deploying level: ")
+    # print(x_current)
+    print(f"Deploying level 1/{max_iterations}", end="\r", flush=True)
     p_current, _ = deploy_human(x_current, exp_id + f"_baseline_0")
     p_current = round(np.exp(p_current)) # since deploy_human models in log
     o_current = - np.abs(p_current - goal)
@@ -77,6 +77,7 @@ def baseline_experiment(path, max_iterations, goal, exp_id, verbose=False):
 
         # Deploy it and record
         x_new = level_from_text(prior.loc[index, "level"])
+        print(f"Deploying level {i+2}/{max_iterations}", end="\r", flush=True)
         p_new, _ = deploy_human(x_new, exp_id + f"_baseline_{i+1}")
         p_new = round(np.exp(p_new)) # since deploy human models in log
         o_new = - np.abs(p_new - goal)
@@ -117,6 +118,8 @@ def baseline_experiment(path, max_iterations, goal, exp_id, verbose=False):
             o_current = -np.abs(p_current - goal)
             x_current = x_new
             experiment["iterations"][-1]["became_new"] = True
+
+            print("-"*50)
     
     if verbose:
         print("Best level: ")

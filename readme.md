@@ -1,10 +1,14 @@
 # Adaptive Zelda Experiment
 
-In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 23 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 150 in-game steps to solve. If you want to know more about the technique and about the experiment, [read our previous paper](https://arxiv.org/abs/2005.07677).
+In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 23 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 200 in-game steps to solve. If you want to know more about our research, [read our previous paper](https://arxiv.org/abs/2005.07677).
 
 Do you want to participate?, follow these instructions:
 
 ## Prerequisites
+
+### Operating System
+
+This script has only been tested in UNIX-based Operating Systems (Ubuntu and MacOS, to be more precise).
 
 ### Having Java installed
 
@@ -18,7 +22,6 @@ Java HotSpot(TM) 64-Bit Server VM (build 13+33, mixed mode, sharing)
 ```
 
 **Anything above 13 should work just fine**. Here are a couple tutorials for installing openJDK 13 in case you don't have it:
-- [on Windows](https://java.tutorials24x7.com/blog/how-to-install-openjdk-13-on-windows)
 - [on Ubuntu](https://installvirtual.com/how-to-install-openjdk-13-on-ubuntu-19/)
 - [on Mac](http://techoral.com/blog/java/install-openjdk-13-on-mac.html)
 
@@ -34,7 +37,6 @@ Start by cloning this repository and going into the folder
 git clone https://github.com/miguelgondu/adaptive_zelda
 cd adaptive_zelda
 ```
-
 
 You will need a running version of Python >=3.6, and the following requirements:
 - scikit-learn
