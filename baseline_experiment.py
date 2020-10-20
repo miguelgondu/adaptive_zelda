@@ -69,7 +69,7 @@ def baseline_experiment(path, max_iterations, goal, exp_id, verbose=False):
         scaled_c = scaled_c[0]
 
         # Compute new point
-        new_point = scaled_c + np.random.normal(scale=0.05, size=scaled_c.size)
+        new_point = scaled_c + np.random.normal(scale=0.1, size=scaled_c.size)
 
         # Convert it to the closest one in the grid
         index = kdtree.query(new_point)[1]

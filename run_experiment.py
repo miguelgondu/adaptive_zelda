@@ -57,8 +57,8 @@ def onboarding(exp_id):
 if __name__ == "__main__":
     path = "./data/generations/custom_posterior.json"
     max_iterations = 10
-    goal = 100
-    exp_id = str(uuid.uuid4()) + f"_goal_{goal}_iterations_{max_iterations}"
+    goal = 150
+    exp_id = str(uuid.uuid4())
 
     experiment_metadata = {
         "prior_path": path,

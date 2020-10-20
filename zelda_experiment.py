@@ -14,7 +14,7 @@ class ZeldaExperiment:
     Outside of it we maintain the behaviors and times,
     similar to how we did it in Sudoku.
     """
-    def __init__(self, path, goal, behaviors=[], times=[], projection=None, verbose=True):
+    def __init__(self, path, goal, behaviors=[], times=[], projection=None, verbose=True, acquisition="ucb"):
         self.path = path
         self.prior = load_df_from_generation(path)
         
@@ -41,6 +41,8 @@ class ZeldaExperiment:
         self.times = times
         self.log_times = [np.log(t) for t in self.times]
         self.verbose = verbose
+        self.acquisition = acquisition # either "ucb" or "ei"
+        self.kappa = 0.03 # for ucb.
 
         self.domain = np.array(
             [self.prior.loc[i, projection] for i in self.prior.index]
@@ -53,7 +55,7 @@ class ZeldaExperiment:
 
         self.kernel = (
             1 * RBF(length_scale=[1]*len(projection)) +
-            1 * DotProduct() + # works, but for the first 3D plot.
+            1 * DotProduct() +
             WhiteKernel(noise_level=np.log(2)))
         self.gpr = GaussianProcessRegressor(kernel=self.kernel)
 
@@ -114,29 +116,30 @@ class ZeldaExperiment:
                 print(f"X: {X}, Y: {Y}")
             self.gpr.fit(X, Y)
 
-    def next_level(self, function="ucb"):
-        next_behavior = self._acquisition(function=function)
+    def next_level(self):
+        next_behavior = self._acquisition()
         index = self.domain.tolist().index(list(next_behavior))
         next_level = self.prior.loc[index]["level"]
         its_prior_performance = self.prior.loc[index]["performance"]
 
         mu, sigma = self._compute_mu_and_sigma()
         if self.verbose:
+            print(f"Performance in prior: {np.exp(its_prior_performance)}")
             print(f"Predicted performance: {np.exp(mu[index])}")
         next_level = level_from_text(next_level)
         return next_level
 
-    def _acquisition(self, function="ucb", kappa=0.03):
-        if function == "ucb":
-            acq = self._ucb(kappa=kappa)
-        elif function == "ei":
+    def _acquisition(self):
+        if self.acquisition == "ucb":
+            acq = self._ucb(kappa=self.kappa)
+        elif self.acquisition == "ei":
             acq = self._expected_improvement()
         else:
-            raise ValueError(f"Was expecting {function} to be 'ucb' or 'ei'")
+            print(f"Unexpected value in self.acquisition: {self.acquisition}")
+            print(f"Defaulting to UCB")
+            acq = self._ucb(kappa=self.kappa)
 
         next_behavior = list(self.domain[np.argmax(acq)])
-        # self.behaviors.append(next_behavior)
-
         return next_behavior
 
     def _expected_improvement(self, return_mu_and_sigma=False):
@@ -269,7 +272,7 @@ class ZeldaExperiment:
         plt.close()
     
     def save_3D_plot(self, save_path, plot_sigma=True):
-        assert len(self.projection) == 2, "This function only makes sense for projected data."
+        assert (len(self.projection) == 2), "This function only makes sense for projected data."
         
         fig = plt.figure()
         ax = plt.axes(projection="3d")
