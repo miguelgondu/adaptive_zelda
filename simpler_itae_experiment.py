@@ -21,7 +21,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, verbose=False):
             times=times, # takes time, not log(time)
             projection=["leniency", "reachability"],
             verbose=verbose,
-            acquisition="ucb"
+            acquisition="ei"
         )
 
         try:
@@ -66,7 +66,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, verbose=False):
             times=times, # takes time, not log(time)
             projection=["leniency", "reachability"],
             verbose=verbose,
-            acquisition="ucb"
+            acquisition="ei"
     )
 
     try:

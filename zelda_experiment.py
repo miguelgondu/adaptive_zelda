@@ -236,17 +236,27 @@ class ZeldaExperiment:
         ax1.set_ylabel(self.projection[1])
         plt.colorbar(plot, ax=ax1)
 
+        if self.acquisition == "ucb":
+            acq = self._ucb(kappa=self.kappa)
+        elif self.acquisition == "ei":
+            acq = self._expected_improvement()
+        else:
+            print(f"Unexpected value in self.acquisition: {self.acquisition}")
+            print(f"Defaulting to UCB")
+            acq = self._ucb(kappa=self.kappa)
+
         plot2 = ax2.scatter(
             points[:, 0],
             points[:, 1],
-            c=-np.abs(np.exp(mu)-self.goal),
+            # c=-np.abs(np.exp(mu)-self.goal),
+            c=acq,
             marker="s",
             s=20
         )
         if black_dot is not None:
             ax2.plot(black_dot[0], black_dot[1], "ok", markersize=12)
 
-        ax2.set_title(f"Distance to {self.goal} time steps")
+        ax2.set_title(f"Acquisition Function ({self.acquisition})")
         ax2.set_xlabel(self.projection[0])
         ax2.set_ylabel(self.projection[1])
         plt.colorbar(plot2, ax=ax2)
