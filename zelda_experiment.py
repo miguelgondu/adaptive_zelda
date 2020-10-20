@@ -2,7 +2,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import RBF, WhiteKernel
+from sklearn.gaussian_process.kernels import RBF, WhiteKernel, DotProduct
 from scipy.spatial import cKDTree
 
 from utils.pcg import level_from_text
@@ -51,7 +51,10 @@ class ZeldaExperiment:
         self.domain_tree = cKDTree(self.domain)
         self.indices_tested = [self.domain_tree.query(beh)[1] for beh in self.behaviors]
 
-        self.kernel = 1 * RBF(length_scale=[1]*len(projection)) + WhiteKernel(noise_level=np.log(2))
+        self.kernel = (
+            1 * RBF(length_scale=[1]*len(projection)) +
+            1 * DotProduct() + # works, but for the first 3D plot.
+            WhiteKernel(noise_level=np.log(2)))
         self.gpr = GaussianProcessRegressor(kernel=self.kernel)
 
         if len(self.behaviors) == len(self.times) and len(self.times) > 0:
