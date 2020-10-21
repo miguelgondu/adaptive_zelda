@@ -1,6 +1,6 @@
 # Adaptive Zelda Experiment
 
-In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 33 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 150 in-game steps to solve. If you want to know more about our research, [read our previous paper](https://arxiv.org/abs/2005.07677). We will not collect any of your personal data.
+In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 33 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 150 in-game steps to solve. If you want to know more about our research, [read our previous paper](https://arxiv.org/abs/2005.07677). 
 
 Do you want to participate?, follow these instructions:
 
@@ -89,3 +89,7 @@ python run_experiment.py
 ## After the experiment
 
 Could you please zip the `data` folder and send it to me via email to `migd@itu.dk`? Feel free to take a look at `./data/plots` to see some cool plots.
+
+## Notice about privacy
+
+During this experiment, we do not collect any of your personal data. Your results will be completely anonymized using random `uuid`s.
