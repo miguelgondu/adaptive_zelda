@@ -70,10 +70,10 @@ After this, your `data` folder should look like this:
 
 ## Playing the game
 
-You will play 23 levels.
+You will play 33 levels.
 
 - The first 3 levels will allow you to familiarize yourself with the mechanics of the game. You can use the **arrow keys** to move around, and press **spacebar** to use your sword and to start the levels. **The goal is to grab the key and proceed to the door**
-- The next 10 levels will correspond to *one* way of adjusting difficulty, and the remainder 10 are *another* way. We are comparing our approach with a baseline, and you'll be served both algorithms at random.
+- The next 15 levels will correspond to *one* way of adjusting difficulty, and the remainder 15 are *another* way. We are comparing our approach with a baseline, and you'll be served both algorithms at random.
 
 More details on the mechanics:
 - The enemies will only move if you move.
