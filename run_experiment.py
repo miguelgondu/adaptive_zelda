@@ -56,7 +56,7 @@ def onboarding(exp_id):
 
 if __name__ == "__main__":
     path = "./data/generations/custom_posterior.json"
-    max_iterations = 10
+    max_iterations = 15
     goal = 150
     exp_id = str(uuid.uuid4())
 

@@ -1,6 +1,6 @@
 # Adaptive Zelda Experiment
 
-In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 23 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 200 in-game steps to solve. If you want to know more about our research, [read our previous paper](https://arxiv.org/abs/2005.07677).
+In this experiment, we are testing a system for adjusting the difficulty of games automatically. You will be presented 33 levels in a Zelda-like game (compiled using the [GVGAI framework](http://www.gvgai.net/index.php)). We will try to find a level that, for you, takes 150 in-game steps to solve. If you want to know more about our research, [read our previous paper](https://arxiv.org/abs/2005.07677). We will not collect any of your personal data.
 
 Do you want to participate?, follow these instructions:
 
@@ -45,7 +45,7 @@ You will need a running version of Python >=3.6, and the following requirements:
 - numpy
 - matplotlib
 
-You can install these using `pip install -r requirements.txt`.
+**You can install these using `pip install -r requirements.txt`**.
 
 
 Also, create the folders for saving the data by running
@@ -76,7 +76,7 @@ You will play 23 levels.
 - The next 10 levels will correspond to *one* way of adjusting difficulty, and the remainder 10 are *another* way. We are comparing our approach with a baseline, and you'll be served both algorithms at random.
 
 More details on the mechanics:
-- The enemies will only walk if you walk.
+- The enemies will only move if you move.
 - You **don't** have to kill all enemies in order to complete the level.
 - If you die in a level, you will play it again until a maximum amount of in-game steps has been registered.
 
