@@ -21,7 +21,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, verbose=False):
             times=times, # takes time, not log(time)
             projection=["leniency", "reachability"],
             verbose=verbose,
-            acquisition="ei"
+            acquisition="ucb"
         )
 
         try:
@@ -29,7 +29,8 @@ def itae_experiment(path, max_iterations, goal, exp_id, verbose=False):
             ze.save_3D_plot(f"./data/plots/plot_3D_{exp_id}_iteration_{it}")
             ze.save_3D_plot(f"./data/plots/plot_3D_no_sigma_{exp_id}_iteration_{it}", plot_sigma=False)
         except Exception as e:
-            print(f"Couldn't plot. Got this exception: {e} ({type(e)})")
+            if verbose:
+                print(f"Couldn't plot. Got this exception: {e} ({type(e)})")
 
         level = ze.next_level()
         if verbose:
@@ -66,7 +67,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, verbose=False):
             times=times, # takes time, not log(time)
             projection=["leniency", "reachability"],
             verbose=verbose,
-            acquisition="ei"
+            acquisition="ucb"
     )
 
     try:

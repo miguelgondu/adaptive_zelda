@@ -151,7 +151,8 @@ class ZeldaExperiment:
         if len(self.times) > 0:
             max_so_far = max([self._g(log_t) for log_t in self.log_times])
         else:
-            max_so_far = -9999
+            # At the beginning, max_so_far should be -infinity, no?
+            max_so_far = -9.9e150
 
         prior = self.prior["performance"].values.reshape(-1, 1)
 
@@ -160,7 +161,10 @@ class ZeldaExperiment:
         sigma = sigma.reshape(-1, 1)
         mu = prior + mu.reshape(-1, 1)
 
-        g_samples = self._g(mu + sigma * np.random.randn(mu.shape[0], n_samples))
+        random_sigmas = sigma * np.random.randn(mu.shape[0], n_samples)
+        mu_samples = mu + random_sigmas
+        g_samples = self._g(mu_samples)
+        print(np.maximum(0, g_samples - max_so_far))
         ei = np.mean(np.maximum(0, g_samples - max_so_far), axis=1)
 
         if return_mu_and_sigma:
@@ -223,7 +227,7 @@ class ZeldaExperiment:
         plot = ax1.scatter(
             points[:, 0],
             points[:, 1],
-            c=mu,
+            c=np.exp(mu),
             marker="s",
             s=20
         )
