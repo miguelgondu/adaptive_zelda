@@ -3,10 +3,22 @@ import numpy as np
 from zelda_experiment import ZeldaExperiment
 from utils.gvgai import deploy_human, features_to_array
 
-def itae_experiment(path, max_iterations, goal, exp_id, verbose=False):
+def itae_experiment(path, max_iterations, goal, exp_id, verbose=False, model_parameters=None):
     behaviors = []
     times = []
     data = []
+
+    if model_parameters is None:
+        mp = {
+            "linear": True,
+            "exp": False,
+            "rbf": True,
+            "noise": True,
+            "acquisition": "ucb",
+            "kappa": 0.3
+        }
+    else:
+        mp = model_parameters
 
     for it in range(max_iterations):
         if verbose:
@@ -21,7 +33,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, verbose=False):
             times=times, # takes time, not log(time)
             projection=["leniency", "reachability"],
             verbose=verbose,
-            acquisition="ucb"
+            model_parameters=mp
         )
 
         try:
@@ -67,7 +79,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, verbose=False):
             times=times, # takes time, not log(time)
             projection=["leniency", "reachability"],
             verbose=verbose,
-            acquisition="ucb"
+            model_parameters=mp
     )
 
     try:
@@ -87,6 +99,6 @@ if __name__ == "__main__":
     itae_experiment(
         "./data/generations/custom_posterior.json",
         10,
-        100,
-        "one_test_ei"
+        150,
+        "testing_model_parameters"
     )

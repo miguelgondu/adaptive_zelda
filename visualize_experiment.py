@@ -46,6 +46,15 @@ def plot_exp_id(exp_id, goal=150):
     ax.set_title(exp_id)
     ax.legend(loc=1)
 
+    max_it = len(performances_itae)
+    in_range_itae = performances_itae[performances_itae >= goal-50]
+    in_range_itae = in_range_itae[in_range_itae <= goal+50]
+    in_range_itae = len(in_range_itae)
+    in_range_baseline = performances_baseline[performances_baseline >= goal-50]
+    in_range_baseline = in_range_baseline[in_range_baseline <= goal+50]
+    in_range_baseline = len(in_range_baseline)
+    ax.text(0.05, 350, f"Itae: {in_range_itae}/{max_it}" + "\n" + f"Base: {in_range_baseline}/{max_it}")
+
     plt.savefig(f"./data/plots/{exp_id}.jpg")
 
 def get_all_exp_ids():

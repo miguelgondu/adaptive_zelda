@@ -13,7 +13,7 @@ from utils.gvgai import deploy_human
 
 from zelda_experiment import ZeldaExperiment
 
-def baseline_experiment(path, max_iterations, goal, exp_id, verbose=False):
+def baseline_experiment(path, max_iterations, goal, exp_id, verbose=False, model_parameters={}):
     # TODO: change this search to be in 2D space.
     experiment = {
         "path": path,
@@ -25,7 +25,9 @@ def baseline_experiment(path, max_iterations, goal, exp_id, verbose=False):
     ze = ZeldaExperiment(
         path,
         goal,
-        projection=["leniency", "reachability"]
+        projection=["leniency", "reachability"],
+        model_parameters=model_parameters,
+        verbose=verbose
     )
     prior = ze.prior
 

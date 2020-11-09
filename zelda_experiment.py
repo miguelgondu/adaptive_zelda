@@ -2,7 +2,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import RBF, WhiteKernel, DotProduct
+from sklearn.gaussian_process.kernels import RBF, WhiteKernel, DotProduct, Matern
 from scipy.spatial import cKDTree
 
 from utils.pcg import level_from_text
@@ -14,7 +14,7 @@ class ZeldaExperiment:
     Outside of it we maintain the behaviors and times,
     similar to how we did it in Sudoku.
     """
-    def __init__(self, path, goal, behaviors=[], times=[], projection=None, verbose=True, acquisition="ucb"):
+    def __init__(self, path, goal, behaviors=[], times=[], projection=None, verbose=True, model_parameters={}):
         self.path = path
         self.prior = load_df_from_generation(path)
         
@@ -41,8 +41,14 @@ class ZeldaExperiment:
         self.times = times
         self.log_times = [np.log(t) for t in self.times]
         self.verbose = verbose
-        self.acquisition = acquisition # either "ucb" or "ei"
-        self.kappa = 0.03 # for ucb.
+        if model_parameters == {}:
+            self.acquisition = "ucb" # either "ucb" or "ei"
+        else:
+            self.acquisition = model_parameters["acquisition"]
+            if "kappa" in model_parameters:
+                self.kappa = model_parameters["kappa"]
+            else:
+                self.kappa = None
 
         self.domain = np.array(
             [self.prior.loc[i, projection] for i in self.prior.index]
@@ -53,10 +59,23 @@ class ZeldaExperiment:
         self.domain_tree = cKDTree(self.domain)
         self.indices_tested = [self.domain_tree.query(beh)[1] for beh in self.behaviors]
 
-        self.kernel = (
-            1 * RBF(length_scale=[1]*len(projection)) +
-            1 * DotProduct() +
-            WhiteKernel(noise_level=np.log(2)))
+        # Construct the kernel
+        self.model_parameters = model_parameters
+        kernels = {
+            "linear": 1 * DotProduct(),
+            "exp": 1 * Matern(nu=0.5),
+            "rbf": 1 * RBF(length_scale=[1]*len(projection)),
+            "noise": WhiteKernel(noise_level=np.log(2))
+        }
+        if self.verbose:
+            print("Selecting kernels:")
+            for name, flag in model_parameters.items():
+                if flag:
+                    print(name, end=" ")
+                print()
+        self.kernel = sum([
+            kernel for name, kernel in kernels.items() if model_parameters[name]
+        ])
         self.gpr = GaussianProcessRegressor(kernel=self.kernel)
 
         if len(self.behaviors) == len(self.times) and len(self.times) > 0:
@@ -151,8 +170,7 @@ class ZeldaExperiment:
         if len(self.times) > 0:
             max_so_far = max([self._g(log_t) for log_t in self.log_times])
         else:
-            # At the beginning, max_so_far should be -infinity, no?
-            max_so_far = -9.9e150
+            max_so_far = -9999
 
         prior = self.prior["performance"].values.reshape(-1, 1)
 
@@ -161,10 +179,7 @@ class ZeldaExperiment:
         sigma = sigma.reshape(-1, 1)
         mu = prior + mu.reshape(-1, 1)
 
-        random_sigmas = sigma * np.random.randn(mu.shape[0], n_samples)
-        mu_samples = mu + random_sigmas
-        g_samples = self._g(mu_samples)
-        print(np.maximum(0, g_samples - max_so_far))
+        g_samples = self._g(mu + sigma * np.random.randn(mu.shape[0], n_samples))
         ei = np.mean(np.maximum(0, g_samples - max_so_far), axis=1)
 
         if return_mu_and_sigma:
@@ -190,7 +205,7 @@ class ZeldaExperiment:
 
         return mu.flatten(), sigma.flatten()
 
-    def _ucb(self, kappa=0.03):
+    def _ucb(self, kappa=None):
         if len(self.times) > 0:
             prior = self.prior["performance"].values.reshape(-1, 1)
         else:
@@ -204,6 +219,20 @@ class ZeldaExperiment:
 
         if len(self.times) > 0:
             sigma = sigma.reshape(-1, 1)
+
+        # It seems to be working better with a fixed kappa=0.03
+        if kappa is None:
+            if len(self.times) == 0:
+                kappa = 0
+            else:
+                d = len(self.projection)
+                n = len(self.times)
+                delta = 0.7
+                pi = np.pi
+                kappa = np.sqrt(2 * np.log((n ** (d/2 + 2) * pi ** 2)/(3*delta)))
+
+        if self.verbose:
+            print(f"kappa in UCB: {kappa}")
 
         ucb = mu + kappa * sigma
 
@@ -227,7 +256,7 @@ class ZeldaExperiment:
         plot = ax1.scatter(
             points[:, 0],
             points[:, 1],
-            c=np.exp(mu),
+            c=mu,
             marker="s",
             s=20
         )
@@ -312,6 +341,87 @@ class ZeldaExperiment:
         plt.savefig(save_path)
         plt.close(fig)
     
+    def _mu_to_csv_d3(self):
+        """
+        This function takes the current ze and
+        outputs a list with the following structure:
+        [
+            {
+                proj[0]: float,
+                ...,
+                proj[n]: float,
+                "performance": int (in time space),
+                "acquisition": float (in time space),
+                "level": str
+            }
+        ]
+        """
+        mu, _ = self._compute_mu_and_sigma()
+        mu = np.exp(mu)
+
+        if self.acquisition == "ucb":
+            acq = self._ucb().flatten()
+        elif self.acquisition == "ei":
+            acq = self._expected_improvement()
+        else:
+            print(f"Found weird value for acquisition: {self.acquisition}")
+            print(f"Defaulting to UCB")
+            acq = self._ucb().flatten()
+
+        rows = []
+        for _tuple, m, a in zip(self.domain, mu, acq):
+            row = {
+                p: val for p, val in zip(self.projection, _tuple)
+            }
+            row["performance"] = round(m)
+            row["acquisition"] = float(a)
+
+            index = self.domain.tolist().index(list(_tuple))
+            level = self.prior.loc[index]["level"]
+            row["level"] = level
+            # print(f"getting the image for: {level}")
+            # row["b64"] = get_level_from_txt(level)
+            rows.append(row)
+
+        return rows
+    
+    def _acq_to_csv_d3(self):
+        """
+        This function takes the current ze and
+        outputs a list with the following structure:
+        [
+            {
+                proj[0]: float,
+                ...,
+                proj[n]: float,
+                "acquisition": float,
+                "level": str
+            }
+        ]
+        """
+        if self.acquisition == "ucb":
+            acq = self._ucb()
+        elif self.acquisition == "ei":
+            acq = self._expected_improvement()
+        else:
+            print(f"Found weird value for acquisition: {self.acquisition}")
+            print(f"Defaulting to UCB")
+            acq = self._ucb()
+
+        rows = []
+        for _tuple, a in zip(self.domain, acq):
+            row = {
+                p: val for p, val in zip(self.projection, _tuple)
+            }
+            row["acquisition"] = a
+
+            index = self.domain.tolist().index(list(_tuple))
+            level = self.prior.loc[index]["level"]
+            row["level"] = level
+            rows.append(row)
+
+        return rows
+    
     def view_3D_plot(self, plot_sigma=True):
         assert len(self.projection) == 2, "This function only makes sense for projected data."
         
@@ -352,7 +462,7 @@ class ZeldaExperiment:
 
         with open(self.path) as fp:
             gen = json.load(fp)
-        
+
         for k, v in gen.items():
             if v["solution"] is not None:
                 center = json.loads(k)
@@ -361,7 +471,7 @@ class ZeldaExperiment:
 
                 # Overwrite perf in v.
                 v["performance"] = mu[index]
-        
+
         # At this point, gen is updated.
         with open(save_path, "w") as fp:
             json.dump(gen, fp)
