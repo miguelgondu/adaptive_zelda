@@ -75,7 +75,7 @@ if __name__ == "__main__":
     mp = {
         "linear": True,
         "exp": False,
-        "rbf": True,
+        "rbf": False,
         "noise": True,
         "acquisition": "ucb",
         "kappa": 0.03
