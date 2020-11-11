@@ -13,10 +13,18 @@ import numpy as np
 import uuid
 import time
 import json
+from pathlib import Path
 from utils.gvgai import deploy_human
 from simpler_itae_experiment import itae_experiment
 from baseline_experiment import baseline_experiment
 from visualize_experiment import plot_exp_id
+
+def create_folders_for_experiment():
+    Path("./data/experiment_results").mkdir(exist_ok=True)
+    Path("./data/levels").mkdir(exist_ok=True)
+    Path("./data/playtraces").mkdir(exist_ok=True)
+    Path("./data/plots").mkdir(exist_ok=True)
+    Path("./data/test").mkdir(exist_ok=True)
 
 def onboarding(exp_id):
     """
@@ -80,6 +88,8 @@ if __name__ == "__main__":
         "time": time.time(),
         "model_parameters": mp
     }
+    print("Creating folders in ./data")
+    create_folders_for_experiment()
 
     print("Onboarding:")
     onboarding(exp_id)

@@ -38,35 +38,9 @@ git clone https://github.com/miguelgondu/adaptive_zelda
 cd adaptive_zelda
 ```
 
-You will need a running version of Python >=3.6, and the following requirements:
-- scikit-learn
-- scipy
-- pandas
-- numpy
-- matplotlib
+You will need a running version of Python >=3.6, and the following requirements: `scikit-learn`, `scipy`, `pandas`, `numpy` and `matplotlib`.
 
 **You can install these using `pip install -r requirements.txt`**.
-
-
-Also, create the folders for saving the data by running
-```
-chmod +x ./create_data_folders.sh
-./create_data_folders.sh
-```
-
-After this, your `data` folder should look like this:
-
-```
-├── data
-│   ├── experiment_results
-│   ├── generations
-│   │   ├── custom_posterior.json
-│   │   └── human_posterior.json
-│   ├── levels
-│   ├── playtraces
-│   ├── plots
-│   └── zelda_vgdl.txt
-```
 
 ## Playing the game
 

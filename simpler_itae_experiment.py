@@ -15,7 +15,7 @@ def itae_experiment(path, max_iterations, goal, exp_id, verbose=False, model_par
             "rbf": True,
             "noise": True,
             "acquisition": "ucb",
-            "kappa": 0.3
+            "kappa": 0.03
         }
     else:
         mp = model_parameters

@@ -17,11 +17,11 @@ class ZeldaExperiment:
     def __init__(self, path, goal, behaviors=[], times=[], projection=None, verbose=True, model_parameters={}):
         self.path = path
         self.prior = load_df_from_generation(path)
-        
+
         if projection is None:
             projection = ["leniency", "reachability", "space coverage"]
         self.projection = projection
-        
+
         if len(projection) == 2:
             # modifies the prior in-function.
             self._project_to_2D()
