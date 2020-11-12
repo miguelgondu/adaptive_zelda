@@ -77,7 +77,7 @@ if __name__ == "__main__":
         "rbf": False,
         "noise": True,
         "acquisition": "ucb",
-        "kappa": 0.03
+        "kappa": 1
     }
 
     experiment_metadata = {
