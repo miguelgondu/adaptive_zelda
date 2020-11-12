@@ -24,7 +24,6 @@ def create_folders_for_experiment():
     Path("./data/levels").mkdir(exist_ok=True)
     Path("./data/playtraces").mkdir(exist_ok=True)
     Path("./data/plots").mkdir(exist_ok=True)
-    Path("./data/test").mkdir(exist_ok=True)
 
 def onboarding(exp_id):
     """
