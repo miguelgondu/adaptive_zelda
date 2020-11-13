@@ -12,7 +12,7 @@ This script has only been tested in UNIX-based Operating Systems (Ubuntu and Mac
 
 ### Having Java installed
 
-Make sure you have Java 13 (or older) installed. You can try this by running `java --version` (or `java -version`, depending on your OS).
+Make sure you have Java 13 (or newer) installed. You can try this by running `java --version` (or `java -version`, depending on your OS).
 
 ```
 > java --version
